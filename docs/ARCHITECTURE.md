@@ -61,6 +61,8 @@
 |-----------|----------|
 | OS | Windows + WSL2 |
 | Approach | AI-Driven Development |
+| Git workflow (Prototype) | GitHub Flow |
+| Git workflow (MVP) | Trunk-based + Feature Flags |
 
 ### Testing
 
@@ -87,13 +89,17 @@
 - AI provider abstraction via Vercel AI SDK
 - API First — specification before implementation
 
-## Future
+## Roadmap
 
+### MVP (after prototype)
+- Feature Flags (for controlled rollout)
+- Trunk-based development + CI/CD
+- E2E testing (Playwright)
+
+### Future (after MVP)
 - SaaS with multi-tenancy
 - RAG, document processing (Python microservice possible)
 - Native mobile clients
-- Feature Flags
-- E2E testing (Playwright)
 - BDD for behavior documentation
 
 ---

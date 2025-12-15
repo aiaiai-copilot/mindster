@@ -15,5 +15,11 @@
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "context7",
+    "postgres",
+    "playwright"
+  ],
+  "enableAllProjectMcpServers": true
 }

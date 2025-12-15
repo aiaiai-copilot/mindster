@@ -183,3 +183,21 @@ app → pages → widgets → features → entities → shared
 ```
 
 Never import upward. Use `shared` for cross-cutting concerns.
+
+### MANDATORY: Use MCP Servers
+
+**Available MCP servers (`.claude/settings.json`):**
+
+| Server | Purpose | When to Use |
+|--------|---------|-------------|
+| `context7` | Fresh documentation for libraries | Checking API of Fastify, Drizzle, grammY, shadcn/ui, etc. |
+| `postgres` | Direct database access | Debugging queries, checking data, exploring schema |
+| `playwright` | Browser automation | E2E tests, screenshots, visual validation |
+
+**Example triggers:**
+- "How does Drizzle handle relations?" → Use `context7` for latest docs
+- "What's in the users table?" → Use `postgres` to query
+- "Check if login page works" → Use `playwright` to test
+- "Take screenshot of dashboard" → Use `playwright`
+
+**IMPORTANT:** Prefer MCP tools over guessing or using outdated knowledge. Always use `context7` when unsure about library APIs.

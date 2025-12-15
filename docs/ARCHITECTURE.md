@@ -4,7 +4,8 @@
 
 - **Name:** Mindster
 - **Domain:** mindstr.ru
-- **Concept:** Personal intelligent hub
+- **Concept:** Personal AI-Powered Assistant Platform
+- **Core idea:** Modular plugin-ready platform with tools unified by AI assistant
 
 ## Business Model
 
@@ -73,14 +74,23 @@
 | Contracts | OpenAPI (structure) + TypeScript (types) |
 | E2E / BDD | Future |
 
-## MVP Features
+## Prototype Features
 
 1. Admin account (created on first launch)
 2. Adding AI provider API keys (encrypted in DB)
 3. Connecting custom models via endpoint + API key
 4. Chat with selected model (streaming)
 5. Conversation history
-6. Telegram bot (linked to owner, same functionality)
+6. **Simple task list** (CRUD, statuses)
+7. Telegram bot (linked to owner, same functionality)
+
+## MVP Features (after prototype)
+
+1. All prototype features
+2. **Calendar** (events, reminders)
+3. **Contacts** (CRUD, link to tasks)
+4. **Plugin API** (standard interface for modules, enable/disable)
+5. AI assistant integration with tools ("break down this task", "remind me to call X")
 
 ## Architecture Principles
 
@@ -88,16 +98,19 @@
 - Support for any OpenAI-compatible models without system updates
 - AI provider abstraction via Vercel AI SDK
 - API First — specification before implementation
+- **Plugin-ready architecture** — each tool is a module with standard interface
 
 ## Roadmap
 
 ### MVP (after prototype)
+- Calendar, Contacts, Plugin API (see MVP Features)
 - Feature Flags (for controlled rollout)
 - Trunk-based development + CI/CD
 - E2E testing (Playwright)
 
 ### Future (after MVP)
 - SaaS with multi-tenancy
+- External plugins, marketplace
 - RAG, document processing (Python microservice possible)
 - Native mobile clients
 - BDD for behavior documentation

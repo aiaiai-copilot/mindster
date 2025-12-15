@@ -186,7 +186,7 @@ Never import upward. Use `shared` for cross-cutting concerns.
 
 ### MANDATORY: Use MCP Servers
 
-**Available MCP servers (`.claude/settings.json`):**
+**Available MCP servers (`.mcp.json`):**
 
 | Server | Purpose | When to Use |
 |--------|---------|-------------|

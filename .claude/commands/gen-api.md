@@ -1,3 +1,7 @@
+---
+description: Generate API client from OpenAPI specification
+---
+
 Generate API client from OpenAPI specification
 
 ```bash

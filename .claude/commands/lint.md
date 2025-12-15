@@ -1,3 +1,7 @@
+---
+description: Run linting checks
+---
+
 Run linting checks
 
 ```bash

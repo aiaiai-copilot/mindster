@@ -1,3 +1,7 @@
+---
+description: Run all tests with Vitest
+---
+
 Run all tests with Vitest
 
 ```bash

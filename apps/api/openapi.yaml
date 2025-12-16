@@ -1,0 +1,1010 @@
+openapi: 3.1.0
+info:
+  title: Mindster API
+  version: 1.0.0
+  description: Personal intelligent hub — a center for managing AI agents, services, and tools.
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Health check
+      description: Returns the health status of the API
+      tags:
+        - System
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - status
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+  /api/v1:
+    get:
+      operationId: getApiInfo
+      summary: API information
+      description: Returns basic information about the API
+      tags:
+        - System
+      security: []
+      responses:
+        '200':
+          description: API information
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - name
+                  - version
+                properties:
+                  name:
+                    type: string
+                    example: Mindster API
+                  version:
+                    type: string
+                    example: 1.0.0
+
+  /api/v1/auth/register:
+    post:
+      operationId: registerAdmin
+      summary: Register admin user
+      description: Register the first admin user. Only works when no users exist in the system.
+      tags:
+        - Auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: Admin user created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          description: Admin already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: ADMIN_EXISTS
+                message: Admin user already exists
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/auth/login:
+    post:
+      operationId: login
+      summary: Login
+      description: Authenticate user with email and password
+      tags:
+        - Auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                code: INVALID_CREDENTIALS
+                message: Invalid email or password
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/auth/me:
+    get:
+      operationId: getCurrentUser
+      summary: Get current user
+      description: Returns the currently authenticated user's information
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Current user information
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/auth/logout:
+    post:
+      operationId: logout
+      summary: Logout
+      description: Logout the current user and invalidate their session
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/providers:
+    get:
+      operationId: getProviders
+      summary: List all providers
+      description: Returns a list of all AI provider configurations for the authenticated user
+      tags:
+        - Providers
+      responses:
+        '200':
+          description: List of providers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Provider'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      operationId: createProvider
+      summary: Create a new provider
+      description: Creates a new AI provider configuration with encrypted API key storage
+      tags:
+        - Providers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProviderRequest'
+      responses:
+        '201':
+          description: Provider created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/providers/{id}:
+    get:
+      operationId: getProviderById
+      summary: Get provider by ID
+      description: Returns a specific AI provider configuration
+      tags:
+        - Providers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Provider ID
+      responses:
+        '200':
+          description: Provider details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      operationId: updateProvider
+      summary: Update provider
+      description: Updates an existing AI provider configuration
+      tags:
+        - Providers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Provider ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProviderRequest'
+      responses:
+        '200':
+          description: Provider updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      operationId: deleteProvider
+      summary: Delete provider
+      description: Deletes an AI provider configuration
+      tags:
+        - Providers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Provider ID
+      responses:
+        '204':
+          description: Provider deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/providers/{id}/test:
+    post:
+      operationId: testProvider
+      summary: Test provider connection
+      description: Tests the provider API key and returns available models if successful
+      tags:
+        - Providers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Provider ID
+      responses:
+        '200':
+          description: Test result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestProviderResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/conversations:
+    get:
+      operationId: getConversations
+      summary: List conversations
+      description: Returns a paginated list of conversations for the authenticated user
+      tags:
+        - Chat
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            minimum: 1
+            maximum: 100
+          description: Maximum number of conversations to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: Number of conversations to skip
+      responses:
+        '200':
+          description: List of conversations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedConversations'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      operationId: createConversation
+      summary: Create conversation
+      description: Creates a new conversation with a specified provider and model
+      tags:
+        - Chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateConversationRequest'
+      responses:
+        '201':
+          description: Conversation created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Provider not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/conversations/{id}:
+    get:
+      operationId: getConversationById
+      summary: Get conversation with messages
+      description: Returns a specific conversation including all its messages
+      tags:
+        - Chat
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Conversation ID
+      responses:
+        '200':
+          description: Conversation with messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationWithMessages'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      operationId: deleteConversation
+      summary: Delete conversation
+      description: Deletes a conversation and all its messages
+      tags:
+        - Chat
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Conversation ID
+      responses:
+        '204':
+          description: Conversation deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/v1/conversations/{id}/messages:
+    get:
+      operationId: getMessages
+      summary: Get messages
+      description: Returns paginated messages for a specific conversation
+      tags:
+        - Chat
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Conversation ID
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 100
+          description: Maximum number of messages to return
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+            minimum: 0
+          description: Number of messages to skip
+      responses:
+        '200':
+          description: List of messages
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMessages'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      operationId: sendMessage
+      summary: Send message
+      description: Sends a user message and returns the assistant's response
+      tags:
+        - Chat
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Conversation ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendMessageRequest'
+      responses:
+        '200':
+          description: Assistant's response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication
+
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - isAdmin
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: User's unique identifier
+        email:
+          type: string
+          format: email
+          description: User's email address
+        name:
+          type: string
+          nullable: true
+          description: User's display name
+        isAdmin:
+          type: boolean
+          description: Whether the user has admin privileges
+      example:
+        id: "123e4567-e89b-12d3-a456-426614174000"
+        email: "admin@mindster.local"
+        name: "Admin User"
+        isAdmin: true
+
+    AuthResponse:
+      type: object
+      required:
+        - user
+        - token
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string
+          description: JWT authentication token
+      example:
+        user:
+          id: "123e4567-e89b-12d3-a456-426614174000"
+          email: "admin@mindster.local"
+          name: "Admin User"
+          isAdmin: true
+        token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        password:
+          type: string
+          format: password
+          minLength: 8
+          description: User's password (minimum 8 characters)
+        name:
+          type: string
+          nullable: true
+          description: User's display name
+      example:
+        email: "admin@mindster.local"
+        password: "SecurePassword123"
+        name: "Admin User"
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address
+        password:
+          type: string
+          format: password
+          description: User's password
+      example:
+        email: "admin@mindster.local"
+        password: "SecurePassword123"
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          nullable: true
+          description: Additional error details
+          additionalProperties: true
+      example:
+        code: "VALIDATION_ERROR"
+        message: "Invalid request data"
+        details:
+          field: "email"
+          reason: "Invalid email format"
+
+    Provider:
+      type: object
+      required:
+        - id
+        - userId
+        - name
+        - baseUrl
+        - isActive
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Provider's unique identifier
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user who owns this provider
+        name:
+          type: string
+          description: Display name for the provider (e.g., "My OpenRouter")
+        baseUrl:
+          type: string
+          description: Base URL for API requests (defaults to OpenRouter)
+        isActive:
+          type: boolean
+          description: Whether the provider is currently active
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the provider was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the provider was last updated
+      example:
+        id: "123e4567-e89b-12d3-a456-426614174000"
+        userId: "123e4567-e89b-12d3-a456-426614174001"
+        name: "My OpenRouter"
+        baseUrl: "https://openrouter.ai/api/v1"
+        isActive: true
+        createdAt: "2025-12-16T10:00:00Z"
+        updatedAt: "2025-12-16T10:00:00Z"
+
+    CreateProviderRequest:
+      type: object
+      required:
+        - name
+        - apiKey
+      properties:
+        name:
+          type: string
+          description: Display name for the provider
+          example: "My OpenRouter"
+        apiKey:
+          type: string
+          format: password
+          description: API key for the provider (will be encrypted before storage)
+        baseUrl:
+          type: string
+          nullable: true
+          description: Base URL for API requests (defaults to OpenRouter if not provided)
+          example: "https://openrouter.ai/api/v1"
+
+    UpdateProviderRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Display name for the provider
+        apiKey:
+          type: string
+          format: password
+          description: API key for the provider (will be encrypted before storage)
+        baseUrl:
+          type: string
+          nullable: true
+          description: Base URL for API requests
+        isActive:
+          type: boolean
+          description: Whether the provider is currently active
+      example:
+        name: "Updated Provider Name"
+        isActive: false
+
+    TestProviderResponse:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          description: Whether the provider connection test was successful
+        message:
+          type: string
+          nullable: true
+          description: Additional message about the test result
+        models:
+          type: array
+          nullable: true
+          items:
+            type: string
+          description: List of available models if test succeeds
+      example:
+        success: true
+        message: "Connection successful"
+        models:
+          - "gpt-4"
+          - "gpt-3.5-turbo"
+
+    Conversation:
+      type: object
+      required:
+        - id
+        - userId
+        - providerId
+        - model
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Conversation's unique identifier
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user who owns this conversation
+        providerId:
+          type: string
+          format: uuid
+          description: ID of the AI provider used for this conversation
+        model:
+          type: string
+          description: Model identifier (e.g., "gpt-4", "claude-3-opus")
+        title:
+          type: string
+          nullable: true
+          description: Conversation title (auto-generated from first message if not provided)
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the conversation was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the conversation was last updated
+      example:
+        id: "123e4567-e89b-12d3-a456-426614174000"
+        userId: "123e4567-e89b-12d3-a456-426614174001"
+        providerId: "123e4567-e89b-12d3-a456-426614174002"
+        model: "gpt-4"
+        title: "Discussion about API design"
+        createdAt: "2025-12-16T10:00:00Z"
+        updatedAt: "2025-12-16T10:30:00Z"
+
+    ConversationWithMessages:
+      allOf:
+        - $ref: '#/components/schemas/Conversation'
+        - type: object
+          required:
+            - messages
+          properties:
+            messages:
+              type: array
+              items:
+                $ref: '#/components/schemas/Message'
+              description: List of messages in the conversation
+
+    Message:
+      type: object
+      required:
+        - id
+        - conversationId
+        - role
+        - content
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Message's unique identifier
+        conversationId:
+          type: string
+          format: uuid
+          description: ID of the conversation this message belongs to
+        role:
+          type: string
+          enum:
+            - user
+            - assistant
+            - system
+          description: Role of the message sender
+        content:
+          type: string
+          description: Message content
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the message was created
+      example:
+        id: "123e4567-e89b-12d3-a456-426614174000"
+        conversationId: "123e4567-e89b-12d3-a456-426614174001"
+        role: "user"
+        content: "How do I design RESTful APIs?"
+        createdAt: "2025-12-16T10:00:00Z"
+
+    CreateConversationRequest:
+      type: object
+      required:
+        - providerId
+        - model
+      properties:
+        title:
+          type: string
+          nullable: true
+          description: Optional conversation title (will be auto-generated if not provided)
+        providerId:
+          type: string
+          format: uuid
+          description: ID of the AI provider to use
+        model:
+          type: string
+          description: Model identifier (e.g., "gpt-4", "claude-3-opus")
+      example:
+        providerId: "123e4567-e89b-12d3-a456-426614174000"
+        model: "gpt-4"
+        title: "API Design Discussion"
+
+    SendMessageRequest:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+          minLength: 1
+          description: The message content to send
+      example:
+        content: "How do I design RESTful APIs?"
+
+    PaginatedConversations:
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Conversation'
+          description: List of conversations
+        total:
+          type: integer
+          minimum: 0
+          description: Total number of conversations available
+      example:
+        items:
+          - id: "123e4567-e89b-12d3-a456-426614174000"
+            userId: "123e4567-e89b-12d3-a456-426614174001"
+            providerId: "123e4567-e89b-12d3-a456-426614174002"
+            model: "gpt-4"
+            title: "API Design Discussion"
+            createdAt: "2025-12-16T10:00:00Z"
+            updatedAt: "2025-12-16T10:30:00Z"
+        total: 1
+
+    PaginatedMessages:
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          description: List of messages
+        total:
+          type: integer
+          minimum: 0
+          description: Total number of messages in the conversation
+      example:
+        items:
+          - id: "123e4567-e89b-12d3-a456-426614174000"
+            conversationId: "123e4567-e89b-12d3-a456-426614174001"
+            role: "user"
+            content: "How do I design RESTful APIs?"
+            createdAt: "2025-12-16T10:00:00Z"
+          - id: "123e4567-e89b-12d3-a456-426614174003"
+            conversationId: "123e4567-e89b-12d3-a456-426614174001"
+            role: "assistant"
+            content: "RESTful API design follows several key principles..."
+            createdAt: "2025-12-16T10:00:05Z"
+        total: 2
+
+  responses:
+    BadRequest:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "VALIDATION_ERROR"
+            message: "Invalid request data"
+
+    Unauthorized:
+      description: Authentication required or invalid token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "UNAUTHORIZED"
+            message: "Authentication required"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "NOT_FOUND"
+            message: "Resource not found"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "INTERNAL_ERROR"
+            message: "An unexpected error occurred"
+
+tags:
+  - name: System
+    description: System health and information endpoints
+  - name: Auth
+    description: Authentication and authorization endpoints
+  - name: Providers
+    description: AI provider management endpoints
+  - name: Chat
+    description: Conversation and message management endpoints

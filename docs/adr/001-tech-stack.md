@@ -45,15 +45,15 @@ Developing Mindster — a personal intelligent hub. Requirements:
 - Custom JWT — more work without clear advantages at start
 - Migration from Better Auth to JWT if needed is straightforward (1-2 days)
 
-### AI Providers: Vercel AI SDK
+### AI Providers: ~~Vercel AI SDK~~ → OpenRouter
 
-**Alternatives:** Custom abstraction
+**Status:** Superseded by ADR-002
 
-**Rationale:**
-- Unified interface for multiple providers
-- Streaming out of the box
-- Custom model support via OpenAI-compatible adapter
-- Saves significant development time
+**Original decision:** Vercel AI SDK for unified provider interface.
+
+**New decision:** OpenRouter as AI gateway. See [ADR-002](./002-openrouter-ai-gateway.md) for rationale.
+
+**Summary:** OpenRouter provides single OpenAI-compatible API for 200+ models without provider-specific dependencies.
 
 ### Telegram: grammY
 

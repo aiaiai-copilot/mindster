@@ -29,7 +29,7 @@
 | Database | PostgreSQL |
 | ORM | Drizzle |
 | Authentication | Better Auth (single admin account for prototype) |
-| AI Providers | Vercel AI SDK |
+| AI Gateway | OpenRouter (OpenAI-compatible API for all models) |
 | Telegram | grammY |
 | API Keys Encryption | AES-256 (key in .env) |
 | Architecture | Feature-based modular (→ Clean Architecture on growth) |
@@ -96,7 +96,7 @@
 
 - `user_id` in all data tables (SaaS readiness)
 - Support for any OpenAI-compatible models without system updates
-- AI provider abstraction via Vercel AI SDK
+- AI gateway via OpenRouter (single API for all models, see ADR-002)
 - API First — specification before implementation
 - **Plugin-ready architecture** — each tool is a module with standard interface
 

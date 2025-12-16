@@ -1,0 +1,27 @@
+{
+  "name": "mindster",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev": "bun run --filter '*' dev",
+    "dev:api": "bun run --filter api dev",
+    "dev:web": "bun run --filter web dev",
+    "dev:bot": "bun run --filter bot dev",
+    "build": "bun run --filter '*' build",
+    "test": "bun run --filter '*' test",
+    "test:unit": "bun run --filter '*' test:unit",
+    "test:int": "bun run --filter '*' test:int",
+    "lint": "bun run --filter '*' lint",
+    "typecheck": "bun run --filter '*' typecheck",
+    "db:generate": "bun run --filter api db:generate",
+    "db:migrate": "bun run --filter api db:migrate",
+    "db:studio": "bun run --filter api db:studio",
+    "gen:api": "bun run --filter web gen:api",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}

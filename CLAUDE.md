@@ -201,3 +201,26 @@ Never import upward. Use `shared` for cross-cutting concerns.
 - "Take screenshot of dashboard" → Use `playwright`
 
 **IMPORTANT:** Prefer MCP tools over guessing or using outdated knowledge. Always use `context7` when unsure about library APIs.
+
+### MANDATORY: Git Workflow
+
+**NEVER commit directly to `master` branch.** Always use feature branches.
+
+**Workflow:**
+1. Create feature branch: `git checkout -b feat/description` or `fix/description`
+2. Make commits on the feature branch
+3. Push and create PR: `gh pr create`
+4. Merge only via PR (after review if applicable)
+
+**Branch naming:**
+- `feat/` — new features
+- `fix/` — bug fixes
+- `refactor/` — code improvements
+- `docs/` — documentation changes
+
+**Before committing, always check current branch:**
+```bash
+git branch --show-current
+```
+
+If on `master`, create a new branch first.

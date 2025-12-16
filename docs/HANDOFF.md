@@ -22,7 +22,7 @@ All technology choices documented in `docs/ARCHITECTURE.md` and `docs/adr/001-te
 | Backend | Bun + Fastify + Drizzle + PostgreSQL |
 | Frontend | React + Vite + Tailwind + shadcn/ui |
 | Auth | Better Auth (single admin for prototype) |
-| AI | Vercel AI SDK (multi-provider, user custom models) |
+| AI | OpenRouter (single API for all models, see ADR-002) |
 | Telegram | grammY |
 | API | API First + OpenAPI + orval |
 | Testing | Vitest (unit + integration) |

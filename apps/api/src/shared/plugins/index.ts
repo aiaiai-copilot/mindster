@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 import fastifySensible from '@fastify/sensible'
 import fastifyCors from '@fastify/cors'
+import authPlugin from './auth'
 import { env } from '../lib/env'
 
 export async function registerPlugins(app: FastifyInstance) {
@@ -12,4 +13,7 @@ export async function registerPlugins(app: FastifyInstance) {
     origin: env.NODE_ENV === 'development' ? true : ['https://mindstr.ru'],
     credentials: true,
   })
+
+  // Authentication plugin
+  await app.register(authPlugin)
 }

@@ -30,7 +30,11 @@ export async function buildApp(): Promise<FastifyInstance> {
   // API version prefix
   app.register(
     async (api) => {
-      // Modules will be registered here
+      // Auth module
+      const { authRoutes } = await import('./modules/auth')
+      await api.register(authRoutes, { prefix: '/auth' })
+
+      // Root endpoint
       api.get('/', async () => {
         return { message: 'Mindster API v1' }
       })

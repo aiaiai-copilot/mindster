@@ -34,6 +34,14 @@ export async function buildApp(): Promise<FastifyInstance> {
       const { authRoutes } = await import('./modules/auth')
       await api.register(authRoutes, { prefix: '/auth' })
 
+      // Providers module
+      const { providersRoutes } = await import('./modules/providers')
+      await api.register(providersRoutes, { prefix: '/providers' })
+
+      // Chat module
+      const { chatRoutes } = await import('./modules/chat')
+      await api.register(chatRoutes, { prefix: '/conversations' })
+
       // Root endpoint
       api.get('/', async () => {
         return { message: 'Mindster API v1' }
